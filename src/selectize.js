@@ -1170,6 +1170,8 @@ $.extend(Selectize.prototype, {
 			self.setActiveOption(null);
 			if (triggerDropdown && self.isOpen) { self.close(); }
 		}
+
+		self.positionDropdown();
 	},
 
 	/**
@@ -1664,8 +1666,12 @@ $.extend(Selectize.prototype, {
 			.toggleClass('full', isFull).toggleClass('not-full', !isFull)
 			.toggleClass('input-active', self.isFocused && !self.isInputHidden)
 			.toggleClass('dropdown-active', self.isOpen)
+			.toggleClass('dropup', self.dropUp)
 			.toggleClass('has-options', !$.isEmptyObject(self.options))
 			.toggleClass('has-items', self.items.length > 0);
+
+		self.$dropdown
+			.toggleClass('dropup', self.dropUp);
 
 		self.$control_input.data('grow', !isFull && !isLocked);
 	},
@@ -1770,7 +1776,12 @@ $.extend(Selectize.prototype, {
 	positionDropdown: function() {
 		var $control = this.$control;
 		var offset = this.settings.dropdownParent === 'body' ? $control.offset() : $control.position();
-		offset.top += $control.outerHeight(true);
+
+		if (this.dropUp = this.settings.dropdownDirection === 'up') {
+			offset.top -= this.$dropdown.outerHeight(true);
+		} else {
+			offset.top += $control.outerHeight(true);
+		}
 
 		this.$dropdown.css({
 			width : $control.outerWidth(),
